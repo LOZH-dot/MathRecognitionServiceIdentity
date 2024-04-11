@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Localization
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,7 +10,11 @@
     <base href="/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="MathRecognitionServiceIdentity.styles.css" />
+    <link rel="stylesheet" href="css/DragAndDropImage.css" />
+    <link rel="stylesheet" href="css/NavBar.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="MathRecognitionService.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
@@ -15,6 +22,22 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script src="_content/BlazorInputFile/inputfile.js"></script>
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        HttpContext?.Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(
+                    CultureInfo.CurrentCulture,
+                    CultureInfo.CurrentUICulture)));
+    }
+}

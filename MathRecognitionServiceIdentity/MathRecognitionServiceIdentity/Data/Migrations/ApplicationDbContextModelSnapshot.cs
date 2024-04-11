@@ -274,6 +274,6 @@ namespace MathRecognitionServiceIdentity.Migrations
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
-        }
-    }
+		}
+	}
 }

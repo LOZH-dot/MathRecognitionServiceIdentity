@@ -1,0 +1,127 @@
+﻿@inject IStringLocalizer<ModalLoginWindow> _localizer
+@rendermode InteractiveServer
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
+     aria-modal="true" role="dialog">
+    <div class="modal-dialog py-5">
+        <div class="modal-content">
+            <div class="modal-header position-relative">
+                <h4 class="modal-title position-absolute start-50 top-50 translate-middle my-3" style="background-color: white;">@_localizer["signInLabel"]</h4>
+                @*
+                    Крестик (закрыть окно)
+                *@
+                <button type="button" class="close position-absolute top-50 end-0 translate-middle-y mx-1 rounded px-2 py-0" @onclick="@ModalCancel">&times;</button>
+            </div>
+            <div class="modal-body container">
+                <div class="col justify-content-center p-3">
+                    <div class="row-auto position-relative">
+                        <div class="w-50 mx-auto py-2">
+                            @*
+                                Имя пользователя/почта
+                            *@
+                            <input type="text" style="width: 100%;" placeholder="@_localizer["loginOrEmail"]" @bind="loginOrEmail" />
+                        </div>
+
+                    </div>
+                    <div class="row-auto position-relative">
+                        <div class="w-50 mx-auto py-2">
+                            @*
+                                Пароль
+                            *@
+                            <input type="text" style="width: 100%;" placeholder="@_localizer["password"]" @bind="password" />
+                        </div>
+
+
+                        @if (isIncorrectPassword && isIncorrectLoginOrEmail)
+                        {
+                            <div class="alert alert-danger my-2" role="alert">
+                                @_localizer["allFieldsIncorrect"];
+                            </div>
+                        }
+                        else if (isIncorrectPassword)
+                        {
+                            <div class="alert alert-danger my-2" role="alert">
+                                @_localizer["passwordIncorrect"]
+                            </div>
+                        }
+                        else if (isIncorrectLoginOrEmail)
+                        {
+                            <div class="alert alert-danger my-2" role="alert">
+                                @_localizer["loginOrEmailIncorrect"]
+                            </div>
+                        }
+
+                    </div>
+                    <div class="row-auto position-relative">
+                        <div class="w-50 mx-auto py-2 position-relative">
+                            @*
+                            Войти
+                            *@
+                            <button type="button" class="btn btn-primary position-absolute start-50 top-50 translate-middle-x" @onclick=@ModalOk>@_localizer["signInButton"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer my-2" style="flex-direction:column;">
+                <p>@_localizer["dontHaveAccount"] <a href="" @onclick="ModalRegisterCall">@_localizer["signUpLabel"]</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string loginOrEmail = string.Empty;
+    private string password = string.Empty;
+
+    private bool isIncorrectLoginOrEmail = false;
+    private bool isIncorrectPassword = false;
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnRegisterCall { get; set; }
+
+    private EventCallback<bool> OnIncorrectInfo { get; set; } 
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private Task ModalOk()
+    {
+        if (!ValidateData()) return OnIncorrectInfo.InvokeAsync(true);
+
+        return OnClose.InvokeAsync(true);
+    }
+
+    private Task ModalRegisterCall()
+    {
+        return OnRegisterCall.InvokeAsync(false);
+    }
+
+    private bool ValidateData()
+    {
+        bool validateComplete = true;
+
+        ResetValidateNotifications();
+
+        if (string.IsNullOrWhiteSpace(loginOrEmail)){
+            isIncorrectLoginOrEmail = true;
+            validateComplete = false;
+        }
+        if (string.IsNullOrWhiteSpace(password)){
+            isIncorrectPassword = true;
+            validateComplete = false;
+        }
+
+        return validateComplete;
+    }
+
+    private void ResetValidateNotifications()
+    {
+        isIncorrectLoginOrEmail = false;
+        isIncorrectPassword = false;
+    }
+}

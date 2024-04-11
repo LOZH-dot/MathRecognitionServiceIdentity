@@ -1,76 +1,53 @@
 ﻿@implements IDisposable
 
-@inject NavigationManager NavigationManager
+@inject IStringLocalizer<NavMenu> _localizer
+@inject NavigationManager NavigationManager;
+@rendermode InteractiveServer
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">MathRecognitionServiceIdentity</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 position-relative">
+    <div class="container-xxl d-flex align-items-md-center">
+        <div class="">
+            <a class="navbar-brand ms-3 brand">@_localizer["brand"]</a>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
         <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
             <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
+                <div class="container">
+                    <button type="button" class="btn btn-primary ms-3" @onclick="() => RedirectToLoginPage()">@_localizer["signIn"]</button>
+                    <button type="button" class="btn btn-light ms-2" @onclick="() => RedirectToRegisterPage()">@_localizer["signUp"]</button>
                 </div>
             </NotAuthorized>
+            <Authorized>
+            <div>
+                <a class="navbar-brand">@context.User.Identity.Name</a>
+            </div>
+            <div class="nav-item px-3">
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="btn btn-danger">Выйти</button>
+                </form>
+            </div>
+            </Authorized>
         </AuthorizeView>
-    </nav>
-</div>
+        <div class="container">
+            <MathRecognitionServiceIdentity.Components.Shared.CultureSelector />
+        </div>
+    </div>
+</nav>
+
 
 @code {
     private string? currentUrl;
+
+    private void RedirectToLoginPage()
+    {
+        NavigationManager.NavigateTo($"/Account/Login", forceLoad: true);
+    }
+
+    private void RedirectToRegisterPage()
+    {
+        NavigationManager.NavigateTo($"/Account/Register", forceLoad: true);
+    }
 
     protected override void OnInitialized()
     {
@@ -89,4 +66,3 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
-
