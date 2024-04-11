@@ -3,7 +3,14 @@
 @using System.Diagnostics;
 @using System.IO;
 @using System.Threading.Tasks;
+@using MathRecognitionServiceIdentityDB.Data.MathRecognitionServiceIdentity
+
+@using MathRecognitionServiceIdentity.Data
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStringLocalizer<ModalRegisterWindow> _localizer
+
+@inherits OwningComponentBase<RecognitionService>
 
 <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);"
      aria-modal="true" role="dialog">
@@ -40,9 +47,46 @@
     [Parameter]
     public string Result { get; set; }
 
+    private Recognition objRecognition = new Recognition();
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    List<Recognition> recognitions = new List<Recognition>();
+    private string UserIdentityName = "";
+
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current user
+        if (authenticationStateTask != null)
+        {
+            var user = (await authenticationStateTask).User;
+            if (user.Identity != null)
+            {
+                UserIdentityName = user.Identity.Name ?? "";
+            }
+        }
+        // Get the forecasts for the current user
+        // We access WeatherForecastService using @Service
+        recognitions = await @Service.GetRecognitionAsync(UserIdentityName);
+        await SaveRecognition();
+        Console.WriteLine(recognitions.Count);
+    }
+
+    // Добавление нового распознавания
+    async Task SaveRecognition()
+    {
+        Recognition objNewRecognition = new Recognition();
+        objNewRecognition.UserName = UserIdentityName == "" ? null : UserIdentityName;
+        objNewRecognition.ImagePath = "Non";
+        objNewRecognition.Json = "1234";
+
+        var result =
+        @Service.CreateRecogntionAsync(objNewRecognition);
     }
 
 }
