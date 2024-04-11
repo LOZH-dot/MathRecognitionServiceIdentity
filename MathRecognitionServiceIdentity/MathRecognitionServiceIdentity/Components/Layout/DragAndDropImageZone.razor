@@ -1,7 +1,14 @@
 ﻿@using BlazorInputFile
-@using System.Globalization;
+@using System.Globalization
 @using System.Diagnostics
+@using System
+@using System.IO
+@using MathRecognitionServiceIdentity.Data
+@using MathRecognitionServiceIdentityDB.Data.MathRecognitionServiceIdentity
+@using Microsoft.AspNetCore.Hosting
+
 @inject IStringLocalizer<DragAndDropImageZone> _localizer
+@inherits OwningComponentBase<RecognitionService>
 @rendermode InteractiveServer
 
 <div class="dropzone @dropClass rounded">
@@ -15,7 +22,7 @@
 
 @if (showResultWindow)
 {
-    <ModalResultWindow OnClose="@ResetResultWindow" Result="@GetResult()"></ModalResultWindow>
+    <ModalResultWindow OnClose="ResetResultWindow" Result="@result"></ModalResultWindow>
 }
 
 @if ((fileTypeError || fileSizeError || singleUploadError))
@@ -55,7 +62,7 @@
 			}
 		</ul>
         <div>
-            <button class="btn btn-primary w-100" @onclick="ShowResultWindow">Распознать</button>
+            <button class="btn btn-primary w-100" @onclick="@ShowResult">Распознать</button>
         </div>
 	</div>
 }
@@ -69,10 +76,18 @@
     private bool singleUploadError = false;
     private List<IFileListEntry> selectedFiles = new List<IFileListEntry>();
     private bool showResultWindow = false;
+    private string result = "";
 
-    private string GetResult()
+    private Recognition objRecognition = new Recognition();
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    List<Recognition> recognitions = new List<Recognition>();
+    private string UserIdentityName = "";
+
+    async Task<string> GetResult(string path)
     {
-        string progToRun = "main.py";
+        string progToRun = $"main.py {path}";
         char[] splitter = { '\r' };
 
         Process proc = new Process();
@@ -87,13 +102,32 @@
         StreamReader sReader = proc.StandardOutput;
         string[] output = sReader.ReadToEnd().Split(splitter);
 
-        foreach (string s in output)
-            Console.WriteLine(s);
-
         proc.WaitForExit();
 
         string result = output[output.Length - 2];
         return result;
+    }
+
+    private async void ShowResult()
+    {
+
+        foreach (var file in selectedFiles)
+        {
+            var path = "wwwroot\\uploads\\" + Guid.NewGuid().ToString() + "." + file.Name.Split('.')[1];
+
+
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+            using (FileStream newFile = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                ms.WriteTo(newFile);
+                ShowResultWindow();
+            }
+            result = await GetResult(path);
+
+            SaveRecognition(path, result);
+            StateHasChanged();
+        }
     }
 
     private void ShowResultWindow()
@@ -141,14 +175,14 @@
                     error = true;
                     fileSizeError = true;
                 }
- 
+
                 if (!acceptedFileTypes.Contains(file.Type))
                 {
                     error = true;
                     fileTypeError = true;
                 }
 
- 
+
                 //keep the good files
                 if (!error)
                 {
@@ -157,9 +191,38 @@
             }
         }
     }
- 
+
     private void RemoveFile(IFileListEntry file)
     {
         selectedFiles.Remove(file);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current user
+        if (authenticationStateTask != null)
+        {
+            var user = (await authenticationStateTask).User;
+            if (user.Identity != null)
+            {
+                UserIdentityName = user.Identity.Name ?? "";
+            }
+        }
+        // Get the forecasts for the current user
+        // We access WeatherForecastService using @Service
+        //recognitions = await @Service.GetRecognitionAsync(UserIdentityName);
+        //Console.WriteLine(recognitions.Count);
+    }
+
+    // Добавление нового распознавания
+    private void SaveRecognition(string path, string json)
+    {
+        Recognition objNewRecognition = new Recognition();
+        objNewRecognition.UserName = UserIdentityName == "" ? null : UserIdentityName;
+        objNewRecognition.ImagePath = path;
+        objNewRecognition.Json = json;
+
+        var result =
+        @Service.CreateRecogntionAsync(objNewRecognition);
     }
 }

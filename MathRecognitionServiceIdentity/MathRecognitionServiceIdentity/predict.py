@@ -1,11 +1,12 @@
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import keras
 import numpy as np
-import os
 
 
 def predict(image_path):
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     model = keras.models.load_model('model_structure.keras')
     img = tf.keras.utils.load_img(
         image_path, target_size=(45, 45)
