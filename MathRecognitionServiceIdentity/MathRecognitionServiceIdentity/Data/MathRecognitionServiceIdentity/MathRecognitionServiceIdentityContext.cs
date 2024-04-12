@@ -23,6 +23,7 @@ public partial class MathRecognitionServiceIdentityContext : DbContext
 
             entity.Property(e => e.ImagePath).IsRequired();
             entity.Property(e => e.Json).IsRequired();
+            entity.Property(e => e.DateTime);
             entity.Property(e => e.UserName)
                 .HasMaxLength(100);
         });

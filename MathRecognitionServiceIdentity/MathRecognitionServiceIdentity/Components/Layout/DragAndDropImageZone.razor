@@ -221,6 +221,7 @@
         objNewRecognition.UserName = UserIdentityName == "" ? null : UserIdentityName;
         objNewRecognition.ImagePath = path;
         objNewRecognition.Json = json;
+        objNewRecognition.DateTime = DateTime.Now;
 
         var result =
         @Service.CreateRecogntionAsync(objNewRecognition);

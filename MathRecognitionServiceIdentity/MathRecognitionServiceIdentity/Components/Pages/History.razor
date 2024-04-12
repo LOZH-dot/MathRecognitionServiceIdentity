@@ -1,0 +1,76 @@
+﻿@page "/history"
+@using MathRecognitionServiceIdentityDB.Data.MathRecognitionServiceIdentity
+@using MathRecognitionServiceIdentity.Data
+
+@rendermode InteractiveServer
+@inherits OwningComponentBase<RecognitionService>
+
+<AuthorizeView>
+    <Authorized>
+        @if (!loadingDone)
+        {
+            <div class="container">
+                Загрузка...
+            </div>
+        }
+        else
+        {
+            <div class="container">
+                <div class="row">
+                @foreach (var recognition in recognitions)
+                {
+                        @* Заявка *@
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card my-3">
+
+                                <img src="@recognition.ImagePath.Substring(7, recognition.ImagePath.Length - 7)" class="card-image-top" alt="thumbnail">
+                                <div class="card-body text-center">
+                                    <h3 class="card-title"><a class="text-secondary">Результат</a></h3>
+                                    <p class="card-text">Дата и время проведения распознавания: @recognition.DateTime</p>
+                                    <button class="btn btn-primary">Получить результат</button>
+                                </div>
+                            </div>
+                        </div>
+                }
+                </div>
+            </div>
+
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не можете просмотреть историю запросов!
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private bool loadingDone = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    List<Recognition> recognitions = new List<Recognition>();
+    private string UserIdentityName = "";
+
+    private async void loadHistory()
+    {
+        recognitions = await @Service.GetRecognitionAsync(UserIdentityName);
+        loadingDone = true;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current user
+        if (authenticationStateTask != null)
+        {
+            var user = (await authenticationStateTask).User;
+            if (user.Identity != null)
+            {
+                UserIdentityName = user.Identity.Name ?? "";
+                loadHistory();
+            }
+        }
+
+        //recognitions = await @Service.GetRecognitionAsync(UserIdentityName);
+    }
+}

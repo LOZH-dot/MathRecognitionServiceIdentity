@@ -14,4 +14,5 @@ public partial class Recognition
     public string ImagePath { get; set; }
 
     public string UserName { get; set; }
+    public DateTime? DateTime { get; set; }
 }
