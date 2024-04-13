@@ -19,18 +19,16 @@ def main(img_path):
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
     segmentation(img_path)
-    print(img_path)
 
     roisFiles = os.listdir(roisFolder)
     roisFiles.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 
-    result = []
+    result = ""
 
     for roi in roisFiles:
-        result.append(predict(roisFolder + "\\" + roi))
+        result += (predict(roisFolder + "\\" + roi) + " ")
 
     print(result)
-
 
 if __name__ == '__main__':
     main(sys.argv[1])

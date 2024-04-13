@@ -5,6 +5,8 @@
 @rendermode InteractiveServer
 @inherits OwningComponentBase<RecognitionService>
 
+<PageTitle>История</PageTitle>
+
 <AuthorizeView>
     <Authorized>
         @if (!loadingDone)
@@ -27,6 +29,7 @@
                                 <div class="card-body text-center">
                                     <h3 class="card-title"><a class="text-secondary">Результат</a></h3>
                                     <p class="card-text">Дата и время проведения распознавания: @recognition.DateTime</p>
+                                    <p class="card-text">Latex: @GetLatex(recognition.Json)</p>
                                     <button class="btn btn-primary">Получить результат</button>
                                 </div>
                             </div>
@@ -50,6 +53,10 @@
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
     List<Recognition> recognitions = new List<Recognition>();
     private string UserIdentityName = "";
+
+    private Parsers.Parse parse = new();
+
+    private string GetLatex(string str) => parse.LatexParse(str);
 
     private async void loadHistory()
     {
