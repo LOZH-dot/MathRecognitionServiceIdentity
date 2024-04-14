@@ -30,7 +30,7 @@
                             @*
                             Результат
                             *@
-                            <input type="text" style="width: 100%;" @bind-value="@Result"/>
+                            <p>LaTeX: <input type="text" style="width: 100%;" value="@GetLatex()"/></p>
                         </div>
                     </div>
                 </div>
@@ -40,12 +40,18 @@
 </div>
 
 @code {
+    Parsers.Parse parser = new();
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
     [Parameter]
     public string Result { get; set; }
+
+    private string GetLatex()
+    {
+        return parser.LatexParse(Result);
+    }
 
     private Task ModalCancel()
     {
