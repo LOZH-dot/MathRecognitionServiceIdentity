@@ -85,7 +85,7 @@
     List<Recognition> recognitions = new List<Recognition>();
     private string UserIdentityName = "";
 
-    async Task<string> GetResult(string path)
+    string GetResult(string path)
     {
         string progToRun = $"main.py {path}";
         char[] splitter = { '\r' };
@@ -123,7 +123,7 @@
                 ms.WriteTo(newFile);
                 ShowResultWindow();
             }
-            result = await GetResult(path);
+            result = GetResult(path);
 
             SaveRecognition(path, result);
             StateHasChanged();
@@ -160,7 +160,12 @@
         List<string> acceptedFileTypes = new List<string>() { "image/png", "image/jpeg", "image/gif" };
         if (files != null)
         {
-            if (files.Length > 1 || selectedFiles.Count > 0) // Нельзя загрузить больше одного файла за раз
+            if ((files.Length > 1 || selectedFiles.Count > 0) && authenticationStateTask.Result.User.Identity.IsAuthenticated == false)
+            {
+                singleUploadError = true;
+                return;
+            }
+            if ((files.Length > 3 || selectedFiles.Count > 2) && authenticationStateTask.Result.User.Identity.IsAuthenticated == true)
             {
                 singleUploadError = true;
                 return;

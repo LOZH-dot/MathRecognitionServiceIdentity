@@ -17,6 +17,11 @@
         }
         else
         {
+            @if (recognitions.Count == 0)
+            {
+                <p class="col-12 text-center">Нет распознаваний!</p>
+            }
+
             <div class="container">
                 <div class="row">
                 @foreach (var recognition in recognitions)

@@ -2,7 +2,6 @@ using MathRecognitionServiceIdentity.Client.Pages;
 using MathRecognitionServiceIdentity.Components;
 using MathRecognitionServiceIdentity.Components.Account;
 using MathRecognitionServiceIdentity.Data;
-using MathRecognitionServiceIdentity.Parsers;
 using MathRecognitionServiceIdentityDB.Data.MathRecognitionServiceIdentity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
