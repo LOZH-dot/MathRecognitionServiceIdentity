@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace MathRecognitionServiceIdentity.Data
 {
@@ -6,6 +7,7 @@ namespace MathRecognitionServiceIdentity.Data
     public class ApplicationUser : IdentityUser
     {
         public DateOnly? DateOfBirth { get; set; }
+        public bool IsDeleted { get; set; }
     }
 
 }

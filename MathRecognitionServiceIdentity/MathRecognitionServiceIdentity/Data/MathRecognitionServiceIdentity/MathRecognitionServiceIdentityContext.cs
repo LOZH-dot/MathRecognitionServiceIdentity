@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using MathRecognitionServiceIdentity.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace MathRecognitionServiceIdentityDB.Data.MathRecognitionServiceIdentity;
@@ -26,6 +27,11 @@ public partial class MathRecognitionServiceIdentityContext : DbContext
             entity.Property(e => e.DateTime);
             entity.Property(e => e.UserName)
                 .HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(e => e.IsDeleted);
         });
 
         OnModelCreatingPartial(modelBuilder);

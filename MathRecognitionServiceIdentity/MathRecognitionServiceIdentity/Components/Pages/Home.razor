@@ -1,24 +1,50 @@
 ﻿@page "/"
+@using MathRecognitionServiceIdentity.Components.Layout
+@using MathRecognitionServiceIdentity.Data
+@using Microsoft.AspNetCore.Identity
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
-@using MathRecognitionServiceIdentity.Components.Layout
 
 <PageTitle>Home</PageTitle>
 
-<div>
-	<div class="container h-100 py-5">
-		<div class="row h-100 justify-content-center align-items-center">
-			<div class="col-6">
-				<DragAndDropImageZone />
-				<AuthorizeView>
-					<button type="button" class="btn btn-dark w-100 mt-2" @onclick="() => RedirectToHistory()">Открыть историю</button>
-				</AuthorizeView>
+@if (!IsDeleted)
+{
+	<div>
+		<div class="container h-100 py-5">
+			<div class="row h-100 justify-content-center align-items-center">
+				<div class="col-6">
+					<DragAndDropImageZone />
+					<AuthorizeView>
+						<button type="button" class="btn btn-dark w-100 mt-2" @onclick="() => RedirectToHistory()">Открыть историю</button>
+					</AuthorizeView>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
+}
+else
+{
+	<p class="text-center">Ваш аккаунт был деактивирован</p>
+}
 
 @code {
+	private bool IsDeleted = false;
+
+	protected async override void OnInitialized()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+
+		if (user.Identity.IsAuthenticated)
+		{
+			var currentUser = await UserManager.GetUserAsync(user);
+			IsDeleted = currentUser.IsDeleted;
+			StateHasChanged();
+		}
+	}
 	private void RedirectToHistory()
 	{
 		NavigationManager.NavigateTo("/history", forceLoad: true);

@@ -1,14 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
+@using MathRecognitionServiceIdentity.Data
+@using Microsoft.AspNetCore.Identity
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager;
+
 <body>
     <div class="wrapper">
         <header>
             <NavMenu />
         </header>
 
-        <main class="content">
-            @Body
-        </main>
+            <main class="content">
+                @Body
+            </main>
 
         <div class="footer">
             <Footer />
