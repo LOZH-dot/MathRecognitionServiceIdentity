@@ -1,4 +1,7 @@
 ﻿
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
 namespace MathRecognitionServiceIdentity.Parsers
 {
     public class Parse
@@ -95,6 +98,271 @@ namespace MathRecognitionServiceIdentity.Parsers
             _tokens.Add("", ParseClasses.none);
         }
 
+        public string JSONParse(string str)
+        {
+            string[] inputClasses = str.Split(' ');
+            List<string> serialize = new List<string>();
+
+            foreach (var sym in inputClasses)
+            {
+                ParseClasses _class = _tokens[sym];
+
+                switch (_class)
+                {
+                    case ParseClasses.minus:
+                        serialize.Add("-");
+                        break;
+                    case ParseClasses.exclamationMark:
+                        serialize.Add("!");
+                        break;
+                    case ParseClasses.openingBracket:
+                        serialize.Add("(");
+                        break;
+                    case ParseClasses.closingBracket:
+                        serialize.Add(")");
+                        break;
+                    case ParseClasses.comma:
+                        serialize.Add(",");
+                        break;
+                    case ParseClasses.openingSquareBracket:
+                        serialize.Add("[");
+                        break;
+                    case ParseClasses.closingSquareBracket:
+                        serialize.Add("]");
+                        break;
+                    case ParseClasses.openingCurlyBrace:
+                        serialize.Add("{");
+                        break;
+                    case ParseClasses.closingCurlyBrace:
+                        serialize.Add("}");
+                        break;
+                    case ParseClasses.plus:
+                        serialize.Add("+");
+                        break;
+                    case ParseClasses.equally:
+                        serialize.Add("=");
+                        break;
+                    case ParseClasses.zero:
+                        serialize.Add("0");
+                        break;
+                    case ParseClasses.one:
+                        serialize.Add("1");
+                        break;
+                    case ParseClasses.two:
+                        serialize.Add("2");
+                        break;
+                    case ParseClasses.three:
+                        serialize.Add("3");
+                        break;
+                    case ParseClasses.four:
+                        serialize.Add("4");
+                        break;
+                    case ParseClasses.five:
+                        serialize.Add("5");
+                        break;
+                    case ParseClasses.six:
+                        serialize.Add("6");
+                        break;
+                    case ParseClasses.seven:
+                        serialize.Add("7");
+                        break;
+                    case ParseClasses.eight:
+                        serialize.Add("8");
+                        break;
+                    case ParseClasses.nine:
+                        serialize.Add("9");
+                        break;
+                    case ParseClasses.A:
+                        serialize.Add("A");
+                        break;
+                    case ParseClasses.alpha:
+                        serialize.Add("alpha");
+                        break;
+                    case ParseClasses.ascii_124:
+                        serialize.Add("|");
+                        break;
+                    case ParseClasses.b:
+                        serialize.Add("b");
+                        break;
+                    case ParseClasses.beta:
+                        serialize.Add("beta");
+                        break;
+                    case ParseClasses.C:
+                        serialize.Add("C");
+                        break;
+                    case ParseClasses.cos:
+                        serialize.Add("cos");
+                        break;
+                    case ParseClasses.d:
+                        serialize.Add("d");
+                        break;
+                    case ParseClasses.delta:
+                        serialize.Add("delta");
+                        break;
+                    case ParseClasses.div:
+                        serialize.Add("div");
+                        break;
+                    case ParseClasses.e:
+                        serialize.Add("e");
+                        break;
+                    case ParseClasses.exists:
+                        serialize.Add("exists");
+                        break;
+                    case ParseClasses.f:
+                        serialize.Add("f");
+                        break;
+                    case ParseClasses.forall:
+                        serialize.Add("forall");
+                        break;
+                    case ParseClasses.forwardSlash:
+                        serialize.Add("/");
+                        break;
+                    case ParseClasses.G:
+                        serialize.Add("G");
+                        break;
+                    case ParseClasses.gamma:
+                        serialize.Add("gamma");
+                        break;
+                    case ParseClasses.geq:
+                        serialize.Add("geq");
+                        break;
+                    case ParseClasses.gt:
+                        serialize.Add(">");
+                        break;
+                    case ParseClasses.H:
+                        serialize.Add("H");
+                        break;
+                    case ParseClasses.i:
+                        serialize.Add("i");
+                        break;
+                    case ParseClasses.belongs:
+                        serialize.Add("in");
+                        break;
+                    case ParseClasses.infinity:
+                        serialize.Add("infty");
+                        break;
+                    case ParseClasses.integral:
+                        serialize.Add("integral");
+                        break;
+                    case ParseClasses.j:
+                        serialize.Add("j");
+                        break;
+                    case ParseClasses.k:
+                        serialize.Add("k");
+                        break;
+                    case ParseClasses.l:
+                        serialize.Add("l");
+                        break;
+                    case ParseClasses.lambda:
+                        serialize.Add("lambda");
+                        break;
+                    case ParseClasses.ldots:
+                        serialize.Add("ldots");
+                        break;
+                    case ParseClasses.leq:
+                        serialize.Add("leq");
+                        break;
+                    case ParseClasses.lim:
+                        serialize.Add("lim");
+                        break;
+                    case ParseClasses.log:
+                        serialize.Add("log");
+                        break;
+                    case ParseClasses.lt:
+                        serialize.Add("<");
+                        break;
+                    case ParseClasses.M:
+                        serialize.Add("M");
+                        break;
+                    case ParseClasses.mu:
+                        serialize.Add("mu");
+                        break;
+                    case ParseClasses.N:
+                        serialize.Add("N");
+                        break;
+                    case ParseClasses.neq:
+                        serialize.Add("neq");
+                        break;
+                    case ParseClasses.o:
+                        serialize.Add("o");
+                        break;
+                    case ParseClasses.p:
+                        serialize.Add("p");
+                        break;
+                    case ParseClasses.phi:
+                        serialize.Add("phi");
+                        break;
+                    case ParseClasses.pi:
+                        serialize.Add("pi");
+                        break;
+                    case ParseClasses.pm:
+                        serialize.Add("pm");
+                        break;
+                    case ParseClasses.prime:
+                        serialize.Add("prime");
+                        break;
+                    case ParseClasses.q:
+                        serialize.Add("q");
+                        break;
+                    case ParseClasses.R:
+                        serialize.Add("R");
+                        break;
+                    case ParseClasses.rightarrow:
+                        serialize.Add("rightarrow");
+                        break;
+                    case ParseClasses.S:
+                        serialize.Add("S");
+                        break;
+                    case ParseClasses.sigma:
+                        serialize.Add("sigma");
+                        break;
+                    case ParseClasses.sin:
+                        serialize.Add("sin");
+                        break;
+                    case ParseClasses.sqrt:
+                        // TODO...
+                        serialize.Add("sqrt");
+                        break;
+                    case ParseClasses.sum:
+                        serialize.Add("sum");
+                        break;
+                    case ParseClasses.T:
+                        serialize.Add("T");
+                        break;
+                    case ParseClasses.tan:
+                        serialize.Add("tan");
+                        break;
+                    case ParseClasses.theta:
+                        serialize.Add("theta");
+                        break;
+                    case ParseClasses.times:
+                        serialize.Add("times");
+                        break;
+                    case ParseClasses.u:
+                        serialize.Add("u");
+                        break;
+                    case ParseClasses.v:
+                        serialize.Add("v");
+                        break;
+                    case ParseClasses.w:
+                        serialize.Add("w");
+                        break;
+                    case ParseClasses.X:
+                        serialize.Add("X");
+                        break;
+                    case ParseClasses.y:
+                        serialize.Add("y");
+                        break;
+                    case ParseClasses.z:
+                        serialize.Add("z");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return JsonSerializer.Serialize(serialize);
+        }
         public string LatexParse(string str)
         {
             string[] inputClasses = str.Split(' ');

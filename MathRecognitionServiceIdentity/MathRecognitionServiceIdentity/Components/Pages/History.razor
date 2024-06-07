@@ -35,6 +35,7 @@
                                     <h3 class="card-title"><a class="text-secondary">Результат</a></h3>
                                     <p class="card-text">Дата и время проведения распознавания: @recognition.DateTime</p>
                                     <p class="card-text">Latex: @GetLatex(recognition.Json)</p>
+                                    <p class="card-text">JSON: @GetJSON(recognition.Json)</p>
                                     @* <button class="btn btn-primary">Получить результат</button> *@
                                 </div>
                             </div>
@@ -62,6 +63,7 @@
     private Parsers.Parse parse = new();
 
     private string GetLatex(string str) => parse.LatexParse(str);
+    private string GetJSON(string str) => parse.JSONParse(str);
 
     private async void loadHistory()
     {
